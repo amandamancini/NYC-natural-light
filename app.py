@@ -21,7 +21,7 @@ def app():
     
     st.sidebar.markdown("""**About this project:**""")
     st.sidebar.markdown("""
-    - This app was created for tenants (and real estate owners) to better understand the amount of natural light they can expect to receive across the year on different floors of their building.
+    - This app was created for tenants (and property owners) to better understand the amount of natural light they can expect to receive across the year on different floors of their building.
     - Per-floor irradiance values were calculated assuming a ceiling height of 10ft, and are therefore unlikely to be accurate for commericial buildings that deviate from this value.
     - Data for this app were downloaded from [NYCOpenData](https://opendata.cityofnewyork.us/) and the [NREL](https://nsrdb.nrel.gov/).
     - For a full description of the project methods and access to code, check out my [GitHub] (https://github.com/amandamancini/NYC-natural-light) repo.""")
