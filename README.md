@@ -14,5 +14,8 @@ The geospatial data obtained from NYCOpenData were in the form of shapefiles, CS
 
 Additionally, meterological data were downloaded from the NREL's National Solar Radiation Database ([NSRDB](https://maps.nrel.gov/nsrdb-viewer/?aL=x8CI3i%255Bv%255D%3Dt%26Jea8x6%255Bv%255D%3Dt%26Jea8x6%255Bd%255D%3D1%26VRLt_G%255Bv%255D%3Dt%26VRLt_G%255Bd%255D%3D2%26mcQtmw%255Bv%255D%3Dt%26mcQtmw%255Bd%255D%3D3&bL=clight&cE=0&lR=0&mC=4.740675384778373%2C22.8515625&zL=2)). Meterological data included Direct Normal Irradiance (DNI; w/m<sup>2</sup>), Diffuse Horizontal Irradiance (DHI; w/m<sup>2</sup>), Global Horizontal Irradiance (GHI; w/m<sup>2</sup>), wind speed (m/s), precipitaion (cm; converted to mm), relative humidity (%), temperature (C), and pressure (mbar; converted to kPa). These data were formatted using the [Meteorological Data: MetPreprocessor](https://umep-docs.readthedocs.io/en/latest/pre-processor/Meteorological%20Data%20MetPreprocessor.html) in the UMEP plugin of QGIS and the formatted data are in the Data folder. For more details, see Methods below.
 
+## Background
+
+
 ## Methods
 
