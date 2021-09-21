@@ -7,7 +7,8 @@ import folium
 from streamlit_folium import folium_static
 import requests
 import sys
-from TDI_Streamlit import string_to_arrayN, string_to_arrayS, string_to_arrayW, string_to_arrayE, relative_light, floor_number, color_change, geocode
+import dill
+from TDI_Streamlit import relative_light, floor_number, color_change, geocode
     
 def app():
     st.title('Understanding Natural Light in NYC')
@@ -22,9 +23,9 @@ def app():
     st.sidebar.markdown("""**About this project:**""")
     st.sidebar.markdown("""
     - This app was created for tenants (and property owners) to better understand the amount of natural light they can expect to receive across the year on different floors of their building.
-    - Per-floor irradiance values were calculated assuming a ceiling height of 10ft, and are therefore unlikely to be accurate for commericial buildings that deviate from this value.
+    - Per-floor irradiance values were calculated assuming a ceiling height of 8ft, and are therefore unlikely to be accurate for commericial buildings that deviate from this value.
     - Data for this app were downloaded from [NYCOpenData](https://opendata.cityofnewyork.us/) and the [NREL](https://nsrdb.nrel.gov/).
-    - For a full description of the project methods and access to code, check out my [GitHub] (https://github.com/amandamancini/NYC-natural-light) repo.""")
+    - For a full description of the project methods and access to code, check out my [GitHub] (https://github.com/amandamancini) repo.""")
     
     location = str(st.text_input('Enter your address here:', '285 Fulton St, New York, NY 10048'))
     
@@ -32,25 +33,16 @@ def app():
                          .replace('NEW YORK', '').replace('NY', '').split())
     
     address_df = pd.read_csv('/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/manhattan_address.csv')
+#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/manhattan_address.dill', 'rb') as f:
+#         address_df = dill.load(f)
     BIN = address_df[address_df['Full_Address'] == location_upper].iloc[0]['BIN']
     
-    irradiance_df = pd.read_csv('/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/irradiance_full.csv')
-    
-    @st.cache
-    def string_to_array(df):
-        """ Converts irradiances values from a string to an array. """
-        
-        df['N'] = df.apply(string_to_arrayN, axis=1)
-        df['S'] = df.apply(string_to_arrayS, axis=1)
-        df['W'] = df.apply(string_to_arrayW, axis=1)
-        df['E'] = df.apply(string_to_arrayE, axis=1)
-    
-        return df
-    
-    irradiance_df = string_to_array(irradiance_df)
+    ## load all irradiance files
+    with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Year_Irradiance_df.dill', 'rb') as f:
+        irradiance_df = dill.load(f)
     
     building = irradiance_df[irradiance_df['BIN'] == BIN]
-    
+        
     left_column, right_column = st.columns(2)
     
     with left_column:
@@ -59,7 +51,7 @@ def app():
     floors = building['Floor'].unique()
     with right_column:
         floor = st.selectbox('Choose a floor:', tuple(['All'] + list(floors)))
-        
+    
     building_final = building[building['Season'] == season]
     
     if floor != 'All':
