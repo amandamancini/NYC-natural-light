@@ -8,7 +8,9 @@ from streamlit_folium import folium_static
 import requests
 import sys
 import dill
-from TDI_Streamlit import relative_light, floor_number, color_change, geocode
+import geopandas as gpd
+import rtree
+from TDI_Streamlit import relative_light, floor_number, color_change, geocode # string_to_arrayN, string_to_arrayS, string_to_arrayW, string_to_arrayE, 
     
 def app():
     st.title('Understanding Natural Light in NYC')
@@ -17,7 +19,6 @@ def app():
     st.markdown("""Enter an address to get information on natural light in your apartment building, office, etc.""")
     st.markdown("""
     - For now, this app only works for Manhattan addresses (other boroughs coming soon)
-    - Please format address as: 'NUMBER', 'STREET NAME', New York, NY 'ZIPCODE'
     - Ground floor is considered to be floor #1""")
     
     st.sidebar.markdown("""**About this project:**""")
@@ -27,19 +28,43 @@ def app():
     - Data for this app were downloaded from [NYCOpenData](https://opendata.cityofnewyork.us/) and the [NREL](https://nsrdb.nrel.gov/).
     - For a full description of the project methods and access to code, check out my [GitHub] (https://github.com/amandamancini) repo.""")
     
+    #geocode location
     location = str(st.text_input('Enter your address here:', '285 Fulton St, New York, NY 10048'))
+    latlng = geocode(location)
     
-    location_upper = ' '.join(location.upper().replace('NEW YORK,', '')
-                         .replace('NEW YORK', '').replace('NY', '').split())
+    # convert location to geopandas df
+    location_df = pd.DataFrame([list(latlng)],columns = ['lat', 'long'])
+    location_gdf = gpd.GeoDataFrame(location_df, geometry=gpd.points_from_xy(location_df.long, location_df.lat))
     
-    address_df = pd.read_csv('/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/manhattan_address.csv')
-#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/manhattan_address.dill', 'rb') as f:
-#         address_df = dill.load(f)
-    BIN = address_df[address_df['Full_Address'] == location_upper].iloc[0]['BIN']
+    # set CRS and convert to NAD
+    location_gdf = location_gdf.set_crs('EPSG:4326', inplace=True)
+    location_gdf_NAD = location_gdf.to_crs('EPSG:2263')
     
+    # load building shapefile and convert to geopandas df
+    buildings = gpd.read_file('/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/Buildings.shp')
+    
+    # join gpds and find BIN
+    sjoined = gpd.sjoin(location_gdf_NAD, buildings, how='inner')
+    if len(sjoined) > 0:
+        BIN = int(sjoined['bin'])
+    else:
+        st.header("""**Oops! We can't seem to locate your address. Please try another.**""")
+
     ## load all irradiance files
-    with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Year_Irradiance_df.dill', 'rb') as f:
+    with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Full_Irradiance_df.dill', 'rb') as f:
         irradiance_df = dill.load(f)
+        
+#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Winter_Irradiance_df.dill', 'rb') as f:
+#         winter_irradiance_df = dill.load(f)
+
+#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Spring_Irradiance_df.dill', 'rb') as f:
+#         spring_irradiance_df = dill.load(f)
+        
+#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Summer_Irradiance_df.dill', 'rb') as f:
+#         summer_irradiance_df = dill.load(f)
+
+#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Autumn_Irradiance_df.dill', 'rb') as f:
+#         autumn_irradiance_df = dill.load(f)
     
     building = irradiance_df[irradiance_df['BIN'] == BIN]
         
@@ -120,8 +145,6 @@ def app():
 
     fig.tight_layout()
     st.pyplot(fig)
-
-    latlng = geocode(location)
     
     map_ = folium.Map(location=latlng, zoom_start=25)
     folium.Marker(latlng, popup=folium.Popup(location, parse_html=True)).add_to(map_)
