@@ -19,3 +19,6 @@ Additionally, meterological data were downloaded from the NREL's National Solar 
 
 ## Methods
 
+
+## Notes
+Please feel free to reach out to me with questions or suggestions for improvement!
