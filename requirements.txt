@@ -9,3 +9,4 @@ requests
 dill
 geopandas
 rtree
+s3fs==2021.08.1
