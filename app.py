@@ -28,7 +28,7 @@ def app():
     st.sidebar.markdown("""**About this project:**""")
     st.sidebar.markdown("""
     - This app was created for tenants (and property owners) to better understand the amount of natural light they can expect to receive across the year on different floors of their building.
-    - Per-floor irradiance values were calculated assuming a ceiling height of 8ft, and are therefore unlikely to be accurate for commericial buildings that deviate from this value.
+    - Per-floor irradiance values were calculated assuming a ceiling height of 10ft, and are therefore unlikely to be accurate for commericial buildings that deviate from this value.
     - Data for this app were downloaded from [NYCOpenData](https://opendata.cityofnewyork.us/) and the [NREL](https://nsrdb.nrel.gov/).
     - For a full description of the project methods and access to code, check out my [GitHub] (https://github.com/amandamancini) repo.""")
     
@@ -145,25 +145,25 @@ def app():
     with sns.axes_style("whitegrid"):
         ax = fig.add_subplot(gs[0, 0])
         sns.distplot(dataN, kde = False).set_title('North', y = 0.9, x=0.9, fontsize = 20)
-        ax.set(xlim=(0, x_max), xlabel='Daily Irradiance (kWh/$\mathregular{m^2}$/Day)', ylabel='Count of Wall Pixels (16$\mathregular{ft^2}$)')
+        ax.set(xlim=(0, x_max), xlabel='Daily Irradiance (kWh/$\mathregular{m^2}$/Day)', ylabel='Count of Wall Pixels (25$\mathregular{ft^2}$)')
         color_change(ax, season)
 
     with sns.axes_style("whitegrid"):
         ax = fig.add_subplot(gs[0, 1])
         sns.distplot(dataS, kde = False).set_title('South', y = 0.9, x=0.9, fontsize = 20)
-        ax.set(xlim=(0, x_max), xlabel='Daily Irradiance (kWh/$\mathregular{m^2}$/Day)', ylabel='Count of Wall Pixels (16$\mathregular{ft^2}$)')
+        ax.set(xlim=(0, x_max), xlabel='Daily Irradiance (kWh/$\mathregular{m^2}$/Day)', ylabel='Count of Wall Pixels (25$\mathregular{ft^2}$)')
         color_change(ax, season)
 
     with sns.axes_style("whitegrid"):
         ax = fig.add_subplot(gs[1, 0])
         sns.distplot(dataW, kde = False).set_title('West', y = 0.9, x=0.9, fontsize = 20)
-        ax.set(xlim=(0, x_max), xlabel='Daily Irradiance (kWh/$\mathregular{m^2}$/Day)', ylabel='Count of Wall Pixels (16$\mathregular{ft^2}$)')
+        ax.set(xlim=(0, x_max), xlabel='Daily Irradiance (kWh/$\mathregular{m^2}$/Day)', ylabel='Count of Wall Pixels (25$\mathregular{ft^2}$)')
         color_change(ax, season)
 
     with sns.axes_style("whitegrid"):
         ax = fig.add_subplot(gs[1, 1])
         sns.distplot(dataE, kde = False).set_title('East', y = 0.9, x=0.9, fontsize = 20)
-        ax.set(xlim=(0, x_max), xlabel='Daily Irradiance (kWh/$\mathregular{m^2}$/Day)', ylabel='Count of Wall Pixels (16$\mathregular{ft^2}$)')
+        ax.set(xlim=(0, x_max), xlabel='Daily Irradiance (kWh/$\mathregular{m^2}$/Day)', ylabel='Count of Wall Pixels (25$\mathregular{ft^2}$)')
         color_change(ax, season)
 
     fig.tight_layout()
