@@ -10,7 +10,9 @@ import sys
 import dill
 import geopandas as gpd
 import rtree
-from TDI_Streamlit import relative_light, floor_number, color_change, geocode # string_to_arrayN, string_to_arrayS, string_to_arrayW, string_to_arrayE, 
+import s3fs
+from s3fs.core import S3FileSystem
+from TDI_Streamlit import relative_light, floor_number, color_change, geocode
     
 def app():
     st.title('Understanding Natural Light in NYC')
@@ -19,6 +21,8 @@ def app():
     st.markdown("""Enter an address to get information on natural light in your apartment building, office, etc.""")
     st.markdown("""
     - For now, this app only works for Manhattan addresses (other boroughs coming soon)
+    - Please enter the address as: Street, City, State Abbreviation, Zipcode (optional)
+    - If your address is not found, consider changing abbreviations to the full word (e.g., W to West or St to Street)
     - Ground floor is considered to be floor #1""")
     
     st.sidebar.markdown("""**About this project:**""")
@@ -45,55 +49,74 @@ def app():
     
     # join gpds and find BIN
     sjoined = gpd.sjoin(location_gdf_NAD, buildings, how='inner')
-    if len(sjoined) > 0:
-        BIN = int(sjoined['bin'])
+    if len(sjoined) == 1:
+        BIN = int(sjoined['bin'])   
     else:
-        st.header("""**Oops! We can't seem to locate your address. Please try another.**""")
+        # reconvert location to geopandas df and buffer
+        location_df = pd.DataFrame([list(latlng)],columns = ['lat', 'long'])
+        location_gdf = gpd.GeoDataFrame(location_df, geometry=gpd.points_from_xy(location_df.long, location_df.lat))
+        location_gdf['geometry'] = location_gdf.geometry.buffer(0.0003)
 
-    ## load all irradiance files
-    with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Full_Irradiance_df.dill', 'rb') as f:
-        irradiance_df = dill.load(f)
+        # set CRS and convert to NAD
+        location_gdf = location_gdf.set_crs('EPSG:4326', inplace=True)
+        location_gdf_NAD = location_gdf.to_crs('EPSG:2263')
+
+        # join gpds and find BIN
+        sjoined2 = gpd.sjoin(location_gdf_NAD, buildings, how='inner')
         
+        if len(sjoined2) == 1:
+            BIN = int(sjoined2['bin'])
+        else:
+            st.header("""**Oops! We can't seem to locate your address in our database. Please try another.**""")
+
+    s3_file = S3FileSystem(anon=True)
+    
+    
+    ## load all irradiance files
+#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Full_Irradiance_df.dill', 'rb') as f:
+#         irradiance_df = dill.load(f)
+    irradiance_df = dill.load(s3_file.open('{}/{}'.format('nyc-natural-light', 'Year_Irradiance_df.dill')))
+
 #     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Winter_Irradiance_df.dill', 'rb') as f:
 #         winter_irradiance_df = dill.load(f)
 
 #     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Spring_Irradiance_df.dill', 'rb') as f:
 #         spring_irradiance_df = dill.load(f)
-        
+
 #     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Summer_Irradiance_df.dill', 'rb') as f:
 #         summer_irradiance_df = dill.load(f)
 
 #     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Autumn_Irradiance_df.dill', 'rb') as f:
 #         autumn_irradiance_df = dill.load(f)
-    
+
     building = irradiance_df[irradiance_df['BIN'] == BIN]
-        
+
     left_column, right_column = st.columns(2)
-    
+
     with left_column:
         season = st.selectbox('Choose a season:', ('Year', 'Winter', 'Spring', 'Summer', 'Autumn'))
 
     floors = building['Floor'].unique()
     with right_column:
         floor = st.selectbox('Choose a floor:', tuple(['All'] + list(floors)))
-    
+
     building_final = building[building['Season'] == season]
-    
+
     if floor != 'All':
         building_final = building_final[building_final['Floor'] == floor]
-    
+
     dataN = np.concatenate(tuple(building_final['N']), axis=None)
     dataS = np.concatenate(tuple(building_final['S']), axis=None)
     dataW = np.concatenate(tuple(building_final['W']), axis=None)
     dataE = np.concatenate(tuple(building_final['E']), axis=None)
-    
+
     north_light, north_var = relative_light(dataN, season)
     south_light, south_var = relative_light(dataS, season)
     west_light, west_var = relative_light(dataW, season)
     east_light, east_var = relative_light(dataE, season)
-    
+
     description = floor_number(floor)
-        
+
     if season == 'Year':
         st.markdown(f'''{description} **across the year**:''')
     elif season == 'Winter':
@@ -104,18 +127,18 @@ def app():
         st.markdown(f'''{description} **in the summer**:''')        
     elif season == 'Autumn':
         st.markdown(f'''{description} **in the autumn**:''')
-    
+
     st.markdown(f'''
     - You can execpt to receive {south_light} light for south-facing windows, with {south_var} variation across the southern wall. 
     - East-facing windows should receive {east_light} light, with {east_var} variation across the eastern wall. 
     - To the west, you will likely receive {west_light} light with {west_var} variation across the western wall. 
     - Finally, you can execpt north-facing windows to recieve {north_light} light with {north_var} variation across the northern wall.''')
-    
+
     if season == 'Year':
         x_max = 3.5   
     else:
         x_max = 9.0        
-    
+
     fig = plt.figure(figsize=(12, 12))
     gs = fig.add_gridspec(2, 2)
 
@@ -145,6 +168,8 @@ def app():
 
     fig.tight_layout()
     st.pyplot(fig)
+    
+    st.caption('TEXT TO EXPLAIN COLORS IN GRAPH. This is a string that explains something above.')
     
     map_ = folium.Map(location=latlng, zoom_start=25)
     folium.Marker(latlng, popup=folium.Popup(location, parse_html=True)).add_to(map_)
