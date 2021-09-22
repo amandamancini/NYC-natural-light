@@ -32,6 +32,9 @@ def app():
     - Data for this app were downloaded from [NYCOpenData](https://opendata.cityofnewyork.us/) and the [NREL](https://nsrdb.nrel.gov/).
     - For a full description of the project methods and access to code, check out my [GitHub] (https://github.com/amandamancini) repo.""")
     
+    # create connection to s3
+    s3_file = S3FileSystem(anon=True)
+        
     #geocode location
     location = str(st.text_input('Enter your address here:', '285 Fulton St, New York, NY 10048'))
     latlng = geocode(location)
@@ -45,8 +48,8 @@ def app():
     location_gdf_NAD = location_gdf.to_crs('EPSG:2263')
     
     # load building shapefile and convert to geopandas df
-    buildings = gpd.read_file('/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/Buildings.shp')
-    
+    buildings = gpd.read_file(s3_file.open('{}/{}'.format('nyc-natural-light', 'Buildings.geojson')))
+
     # join gpds and find BIN
     sjoined = gpd.sjoin(location_gdf_NAD, buildings, how='inner')
     if len(sjoined) == 1:
@@ -68,9 +71,6 @@ def app():
             BIN = int(sjoined2['bin'])
         else:
             st.header("""**Oops! We can't seem to locate your address in our database. Please try another.**""")
-
-    s3_file = S3FileSystem(anon=True)
-    
     
     ## load all irradiance files
 #     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Full_Irradiance_df.dill', 'rb') as f:
