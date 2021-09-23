@@ -34,6 +34,11 @@ def app():
     
     # create connection to s3
     s3_file = S3FileSystem(anon=True)
+    
+    @st.cache()
+    def load_data(bucket, filename):
+        data = s3_file.open('{}/{}'.format(bucket, filename))
+        return data
         
     #geocode location
     location = str(st.text_input('Enter your address here:', '285 Fulton St, New York, NY 10048'))
@@ -48,8 +53,8 @@ def app():
     location_gdf_NAD = location_gdf.to_crs('EPSG:2263')
     
     # load building shapefile and convert to geopandas df
-    buildings = gpd.read_file(s3_file.open('{}/{}'.format('nyc-natural-light', 'Buildings.geojson')))
-
+    buildings = gpd.read_file(load_data('nyc-natural-light', 'Buildings.geojson'))
+    
     # join gpds and find BIN
     sjoined = gpd.sjoin(location_gdf_NAD, buildings, how='inner')
     if len(sjoined) == 1:
@@ -73,21 +78,7 @@ def app():
             st.header("""**Oops! We can't seem to locate your address in our database. Please try another.**""")
     
     ## load all irradiance files
-#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Full_Irradiance_df.dill', 'rb') as f:
-#         irradiance_df = dill.load(f)
-    irradiance_df = dill.load(s3_file.open('{}/{}'.format('nyc-natural-light', 'Year_Irradiance_df.dill')))
-
-#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Winter_Irradiance_df.dill', 'rb') as f:
-#         winter_irradiance_df = dill.load(f)
-
-#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Spring_Irradiance_df.dill', 'rb') as f:
-#         spring_irradiance_df = dill.load(f)
-
-#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Summer_Irradiance_df.dill', 'rb') as f:
-#         summer_irradiance_df = dill.load(f)
-
-#     with open(f'/Users/amandamancini/Dropbox/TDI/Fellowship/Capstone/Data/Manhattan/sebe_results/Autumn_Irradiance_df.dill', 'rb') as f:
-#         autumn_irradiance_df = dill.load(f)
+    irradiance_df = dill.load(load_data('nyc-natural-light', 'Year_Irradiance_df.dill'))
 
     building = irradiance_df[irradiance_df['BIN'] == BIN]
 
@@ -169,7 +160,7 @@ def app():
     fig.tight_layout()
     st.pyplot(fig)
     
-    st.caption('TEXT TO EXPLAIN COLORS IN GRAPH. This is a string that explains something above.')
+    st.caption('Colors are strictly for visualizing abundance of low (cool colors) to strong light intensity (warm colors) on each wall. Irradiance values range from 0-3.5 kWh/$\mathregular{m^2}$/Day for yearly estimates and from 0-9 kWh/$\mathregular{m^2}$/Day for seasonal estimates.')
     
     map_ = folium.Map(location=latlng, zoom_start=25)
     folium.Marker(latlng, popup=folium.Popup(location, parse_html=True)).add_to(map_)
