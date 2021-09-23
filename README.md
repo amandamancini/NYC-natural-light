@@ -1,6 +1,6 @@
 # NYC-natural-light
  
-This project and [application](https://share.streamlit.io/amandamancini/nyc-natural-light/main/app.py) were created to help tenants (and property owners) in New York City to better understand the amount of natural light they can expect to receive in their building and on different floors, across the year and in different seasons. 
+This project and [application](https://nyc-natural-light.herokuapp.com/) were created to help tenants (and property owners) in New York City to better understand the amount of natural light they can expect to receive in their building and on different floors, across the year and in different seasons. 
 
 ## Data sources
 The data for this project were downloaded from two sources, [NYCOpenData](https://opendata.cityofnewyork.us/) and the [National Renewable Energy Laboratory](https://nsrdb.nrel.gov/). Most of the data for this project exceed the storage capacity on GitHub and can be downloaded at the links below. For more details on data manipulation and uses, see the Methods section below.
