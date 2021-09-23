@@ -60,25 +60,10 @@ def app():
     if len(sjoined) == 1:
         BIN = int(sjoined['bin'])   
     else:
-        # reconvert location to geopandas df and buffer
-        location_df = pd.DataFrame([list(latlng)],columns = ['lat', 'long'])
-        location_gdf = gpd.GeoDataFrame(location_df, geometry=gpd.points_from_xy(location_df.long, location_df.lat))
-        location_gdf['geometry'] = location_gdf.geometry.buffer(0.0003)
-
-        # set CRS and convert to NAD
-        location_gdf = location_gdf.set_crs('EPSG:4326', inplace=True)
-        location_gdf_NAD = location_gdf.to_crs('EPSG:2263')
-
-        # join gpds and find BIN
-        sjoined2 = gpd.sjoin(location_gdf_NAD, buildings, how='inner')
-        
-        if len(sjoined2) == 1:
-            BIN = int(sjoined2['bin'])
-        else:
-            st.header("""**Oops! We can't seem to locate your address in our database. Please try another.**""")
+        st.header("""**Oops! We can't seem to locate your address in our database. Please try another.**""")
     
     ## load all irradiance files
-    irradiance_df = dill.load(load_data('nyc-natural-light', 'Year_Irradiance_df.dill'))
+    irradiance_df = dill.load(load_data('nyc-natural-light', 'Full_Irradiance_df.dill'))
 
     building = irradiance_df[irradiance_df['BIN'] == BIN]
 
