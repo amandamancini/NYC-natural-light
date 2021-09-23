@@ -21,7 +21,7 @@ Additionally, meterological data were downloaded from the NREL's National Solar 
 
 ## Methods
 The workflow to generate irradiance data is as follows: 
-### In QGIS application:
+### In QGIS application
 1) I created one DEM for Manhattan by moasicking together DEMs using the GDAL Merge tool in the QGIS application using the following parameters:
     - Output Data Type: Float32
     - Additional Creation Options: High Compression
@@ -40,7 +40,7 @@ The workflow to generate irradiance data is as follows:
     - Implementation is found in TDI_Full_Irradiance.py.
 5) Dictionaries of irradiance values were converted to pandas dataframes for use in Streamlit application.
     - Dill files were flattened in dataframes decribing NSWE well irradiance values by building, floor, and season. Data were aggregated into one master dataframe (all seasons), as well as exported with eash season individually.
-    - Irradiance values were normalized by number of days in each season (or year) into kWh/${m^2}$/Day.
+    - Irradiance values were normalized by number of days in each season (or year) into kWh/m<sup>2</sup>/Day.
     - Support functions are found in TDI_Python.py.
     - Implementation is found in TDI_Dataframes.py.
 
