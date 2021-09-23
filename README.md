@@ -15,9 +15,15 @@ The geospatial data obtained from NYCOpenData were in the form of shapefiles, CS
 Additionally, meterological data were downloaded from the NREL's National Solar Radiation Database ([NSRDB](https://maps.nrel.gov/nsrdb-viewer/?aL=x8CI3i%255Bv%255D%3Dt%26Jea8x6%255Bv%255D%3Dt%26Jea8x6%255Bd%255D%3D1%26VRLt_G%255Bv%255D%3Dt%26VRLt_G%255Bd%255D%3D2%26mcQtmw%255Bv%255D%3Dt%26mcQtmw%255Bd%255D%3D3&bL=clight&cE=0&lR=0&mC=4.740675384778373%2C22.8515625&zL=2)). Meterological data included Direct Normal Irradiance (DNI; w/m<sup>2</sup>), Diffuse Horizontal Irradiance (DHI; w/m<sup>2</sup>), Global Horizontal Irradiance (GHI; w/m<sup>2</sup>), wind speed (m/s), precipitaion (cm; converted to mm), relative humidity (%), temperature (C), and pressure (mbar; converted to kPa). These data were formatted using the [Meteorological Data: MetPreprocessor](https://umep-docs.readthedocs.io/en/latest/pre-processor/Meteorological%20Data%20MetPreprocessor.html) in the UMEP plugin of QGIS and the formatted data are in the Data folder. For more details, see Methods below.
 
 ## Background
--why I was interested
--some background on papers (with links to papers)
--general algorithm outlie
+The motivation for this project was to create an application for New York City tenants and building owners to better understand the amount of natural light they can expect at different times of the year in their building for NSWE-facing walls. Due to the shading effects of buildings in NYC, adjacent buildings can received vastly different amounts of light throughout the year. The ability to estimate solar irradiance on building walls and rooftops in urban areas has previously been used to assess heat load in cities, as well as solar panel potential. This project aimed to utilize the methods developed for these other applications in a novel way that has real values for millions of people.
+
+The methods used in this project were adapted from those developed by the [Urban Multi-scale Environmental Predictor](https://umep-docs.readthedocs.io/en/latest/index.html) (UMEP) Community. To estimate solar irradiance on building walls, first walls were detected from a Digital Surface Model (DSM) using an edge detection filter and rasters of wall heights and aspect were generated. The DSM, wall heights and aspect rasters, and meterological data (primarily GHI, DNI, and DHI) were then used to generate the shadow volume expected to be cast by each building onto adjacent areas using methods described by Ratti and Richens (1999; 2004). Using a modified shadow-casting algorithm, total solar irradiance was calculated for each wall pixel by summing the amount of direct, diffuse, and reflected radiation on the wall pixel and then subtracting out shadow volume cast from adjacent buildings. 
+
+For a more thorough description of algorithm details, see the following papers:
+    - [Ratti CF & Richens P. 1999. Urban texture analysis with image processing techniques. In: Proc CAADFutures99, Atlanta, GA.](http://senseable.mit.edu/papers/pdf/19990608_Ratti_Richens_UrbanTexture_CAAD.pdf)
+    - [Ratti CF & Richens P. 2004. Raster analysis of urban form. *Environment and Planning B: Planning and Design* 31, 297–309.](https://senseable.mit.edu/papers/pdf/20040301_Ratti_Richens_RasterAnalysis_EnvironmentPlanning.pdf)
+    - [Lindberg F, Jonsson P, Honjo T, and Wästberg D. 2015. Solar energy on building envelopes - 3D modelling in a 2D environment. *Solar Energy* 115: 369–378](https://www.sciencedirect.com/science/article/abs/pii/S0038092X15001164)
+    - [Lindberg F, Grimmond CSB, Gabey A, Huang B, Kent C, et al. 2018. Multi-scale Environmental Predictor (UMEP): An integrated tool for city-based climate services. *Environmental Modelling & Software* 99: 70-87](https://www.sciencedirect.com/science/article/pii/S1364815217304140)
 
 ## Methods
 ### In QGIS application
@@ -42,6 +48,14 @@ Additionally, meterological data were downloaded from the NREL's National Solar 
     - Irradiance values were normalized by number of days in each season (or year) into kWh/m<sup>2</sup>/Day.
     - Support functions are found in TDI_Python.py.
     - Implementation is found in TDI_Dataframes.py.
+
+### Application
+6) Irradiance values were turned into qualitative descriptions (low, moderate, and strong) of light intensity by visualing a histogram of irradiance values for each season and dividing into the 3 categories along visual breaks in the data.
+    - For yearly data, low light is considered irradiance below 1 kWh/m<sup>2</sup>/Day, moderate is between 1-2 kWh/m<sup>2</sup>/Day, and strong is above 2 kWh/m<sup>2</sup>/Day.
+    For seasonal data, low light is considered irradiance below 2.5 kWh/m<sup>2</sup>/Day, moderate is between 2.5-5 kWh/m<sup>2</sup>/Day, and strong is above 5 kWh/m<sup>2</sup>/Day.
+    - Values different between yearly and seasonal estimated because of the number of days used to normalize data.
+    - A similar procedure was taken for generating qualitative descriptions of light variation.
+    - Support functions are found in TDI_Streamlit.py
 
 ## Notes
 Please feel free to reach out to me with questions or suggestions for improvement!
