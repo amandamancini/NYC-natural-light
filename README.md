@@ -21,12 +21,12 @@ Additionally, meterological data were downloaded from the NREL's National Solar 
 
 ## Methods
 The workflow to generate irradiance data is as follows: 
-# In QGIS application:
+### In QGIS application:
 1) I created one DEM for Manhattan by moasicking together DEMs using the GDAL Merge tool in the QGIS application using the following parameters:
 - Output Data Type: Float32
 - Additional Creation Options: High Compression
 
-# In Python using TDI_Full_Irradiance.py and TDI_Dataframes.py
+### In Python using TDI_Full_Irradiance.py and TDI_Dataframes.py
 2) Using 'neighborhood_setup' (see TDI_Neighborhood.py) I generated DSMs, wall aspect and height TIFFs, and buffered neighborhood and buidling shapefiles for each neighborhood
 - This function was used to generate required data for modelling irradiance values on building walls in #3.
 - Support functions are found in TDI_Python.py and TDI_QGIS.py.
