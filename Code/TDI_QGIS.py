@@ -25,6 +25,9 @@ With QGIS : 32000
 
 class DSM_generator(QgsProcessingAlgorithm):
 
+    """Generate Digital Surface Model (DSM) from Digital Elevation Model (DEM) and building shapefile
+    of building footprints using the building height feild."""
+
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer('Buildings', 'Buildings', types=[QgsProcessing.TypeVectorPolygon], defaultValue=None))
         self.addParameter(QgsProcessingParameterRasterLayer('DEM', 'DEM', defaultValue=None))
@@ -78,6 +81,8 @@ With QGIS : 32000
 
 class wall_height_aspect(QgsProcessingAlgorithm):
 
+    """Generate wall height and wall aspect TIFFs using DSM."""
+
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterRasterLayer('DSM', 'DSM', defaultValue=None))
         self.addParameter(QgsProcessingParameterRasterDestination('Wallaspect', 'WallAspect', optional=True, createByDefault=False, defaultValue=None))
@@ -125,6 +130,9 @@ With QGIS : 32000
 """
 
 class sebe(QgsProcessingAlgorithm):
+
+    """Calculate wall and roof irradiances for each building using DSM, wall height and apsect,
+    and meterological data. This will return several files."""
 
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterNumber('Albedo', 'Albedo', type=QgsProcessingParameterNumber.Double, minValue=0, maxValue=1, defaultValue=0.15))
@@ -188,6 +196,8 @@ With QGIS : 32000
 
 class building_buffer(QgsProcessingAlgorithm):
 
+    """Create buffered shapefile of building (or other shapefile). """
+
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterNumber('Bufferft', 'Buffer_ft', type=QgsProcessingParameterNumber.Integer, minValue=0, defaultValue=5))
         self.addParameter(QgsProcessingParameterVectorLayer('Buildings', 'Buildings', types=[QgsProcessing.TypeVectorPolygon], defaultValue=None))
@@ -240,6 +250,8 @@ With QGIS : 32000
 
 
 class clip_shapefile(QgsProcessingAlgorithm):
+
+    """Clip shapefile by another shapefile."""
 
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterVectorLayer('Clip', 'Clip', types=[QgsProcessing.TypeVectorPolygon], defaultValue=None))
