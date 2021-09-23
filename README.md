@@ -23,24 +23,24 @@ Additionally, meterological data were downloaded from the NREL's National Solar 
 The workflow to generate irradiance data is as follows: 
 ### In QGIS application:
 1) I created one DEM for Manhattan by moasicking together DEMs using the GDAL Merge tool in the QGIS application using the following parameters:
-- Output Data Type: Float32
-- Additional Creation Options: High Compression
+    - Output Data Type: Float32
+    - Additional Creation Options: High Compression
 
 ### In Python using TDI_Full_Irradiance.py and TDI_Dataframes.py
 2) Using 'neighborhood_setup' (see TDI_Neighborhood.py) I generated DSMs, wall aspect and height TIFFs, and buffered neighborhood and buidling shapefiles for each neighborhood
-- This function was used to generate required data for modelling irradiance values on building walls in #3.
-- Support functions are found in TDI_Python.py and TDI_QGIS.py.
-- Implementation is found in TDI_Full_Irradiance.py.
+    - This function was used to generate required data for modelling irradiance values on building walls in #3.
+    - Support functions are found in TDI_Python.py and TDI_QGIS.py.
+    - Implementation is found in TDI_Full_Irradiance.py.
 3) Using 'full_season_irradiances' (see TDI_Neighborhood.py) I generated irradiance values for NSWE walls of each building and for every floor.
-- This function uses the Solar Radiation: Solar Energy on Building Envelopes (SEBE) in the UMEP QGIS plugin to calculated expected irradiance on each building wall pixel. These data were then converted to a list of arrays and for each building irradiance per floor and per wall direction (NSWE) was summarized and stored in a dictionary and exported as a dill file for later use.
-- These calculatations were perfomed for each neighborhood individually and for all seasons (yearly, winter, spring, summer, and autumn).
-- Support functions are found in TDI_Python.py and TDI_QGIS.py.
-- Implementation is found in TDI_Full_Irradiance.py.
+    - This function uses the Solar Radiation: Solar Energy on Building Envelopes (SEBE) in the UMEP QGIS plugin to calculated expected irradiance on each building wall pixel. These data were then converted to a list of arrays and for each building irradiance per floor and per wall direction (NSWE) was summarized and stored in a dictionary and exported as a dill file for later use.
+    - These calculatations were perfomed for each neighborhood individually and for all seasons (yearly, winter, spring, summer, and autumn).
+    - Support functions are found in TDI_Python.py and TDI_QGIS.py.
+    - Implementation is found in TDI_Full_Irradiance.py.
 4) Dictionaries of irradiance values were converted to pandas dataframes for use in Streamlit application.
-- Dill files were flattened in dataframes decribing NSWE well irradiance values by building, floor, and season. Data were aggregated into one master dataframe (all seasons), as well as exported with eash season individually.
-- Irradiance values were normalized by number of days in each season (or year) into kWh/$\mathregular{m^2}$/Day.
-- Support functions are found in TDI_Python.py.
-- Implementation is found in TDI_Dataframes.py.
+    - Dill files were flattened in dataframes decribing NSWE well irradiance values by building, floor, and season. Data were aggregated into one master dataframe (all seasons), as well as exported with eash season individually.
+    - Irradiance values were normalized by number of days in each season (or year) into kWh/$\mathregular{m^2}$/Day.
+    - Support functions are found in TDI_Python.py.
+    - Implementation is found in TDI_Dataframes.py.
 
 ## Notes
 Please feel free to reach out to me with questions or suggestions for improvement!
