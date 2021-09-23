@@ -63,13 +63,13 @@ def app():
         st.header("""**Oops! We can't seem to locate your address in our database. Please try another.**""")
     
     ## load all irradiance files
-    year_irradiance_df = dill.load(load_data('nyc-natural-light', 'Year_Irradiance_df.dill'))
-    winter_irradiance_df = dill.load(load_data('nyc-natural-light', 'Winter_Irradiance_df.dill'))
-    spring_irradiance_df = dill.load(load_data('nyc-natural-light', 'Spring_Irradiance_df.dill'))
-    summer_irradiance_df = dill.load(load_data('nyc-natural-light', 'Summer_Irradiance_df.dill'))
-    autumn_irradiance_df = dill.load(load_data('nyc-natural-light', 'Autumn_Irradiance_df.dill'))
+    irradiance_df = dill.load(load_data('nyc-natural-light', 'Year_Irradiance_df.dill')) # year_
+    # winter_irradiance_df = dill.load(load_data('nyc-natural-light', 'Winter_Irradiance_df.dill'))
+    # spring_irradiance_df = dill.load(load_data('nyc-natural-light', 'Spring_Irradiance_df.dill'))
+    # summer_irradiance_df = dill.load(load_data('nyc-natural-light', 'Summer_Irradiance_df.dill'))
+    # autumn_irradiance_df = dill.load(load_data('nyc-natural-light', 'Autumn_Irradiance_df.dill'))
 
-    dfs = [year_irradiance_df, winter_irradiance_df, spring_irradiance_df, summer_irradiance_df, autumn_irradiance_df]
+    # dfs = [year_irradiance_df, winter_irradiance_df, spring_irradiance_df, summer_irradiance_df, autumn_irradiance_df]
 
     irradiance_df = pd.concat(dfs)
 
