@@ -71,7 +71,7 @@ def app():
 
     # dfs = [year_irradiance_df, winter_irradiance_df, spring_irradiance_df, summer_irradiance_df, autumn_irradiance_df]
 
-    irradiance_df = pd.concat(dfs)
+    # irradiance_df = pd.concat(dfs)
 
     building = irradiance_df[irradiance_df['BIN'] == BIN]
 
