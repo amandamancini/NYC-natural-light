@@ -21,6 +21,7 @@ def app():
     st.markdown("""Enter an address to get information on natural light in your apartment building, office, etc.""")
     st.markdown("""
     - For now, this app only works for Manhattan addresses (other boroughs coming soon)
+    - Due to streaming limitations, this app currently only works for yearly estimates (other seasons coming soon)
     - Please enter the address as: Street, City, State Abbreviation, Zipcode (optional)
     - If your address is not found, consider changing abbreviations to the full word (e.g., W to West or St to Street)
     - Ground floor is considered to be floor #1""")
@@ -63,22 +64,22 @@ def app():
         st.header("""**Oops! We can't seem to locate your address in our database. Please try another.**""")
     
     ## load all irradiance files
-    year_irradiance_df = dill.load(load_data('nyc-natural-light', 'Year_Irradiance_df.dill')) # year_
-    winter_irradiance_df = dill.load(load_data('nyc-natural-light', 'Winter_Irradiance_df.dill'))
-    spring_irradiance_df = dill.load(load_data('nyc-natural-light', 'Spring_Irradiance_df.dill'))
-    summer_irradiance_df = dill.load(load_data('nyc-natural-light', 'Summer_Irradiance_df.dill'))
-    autumn_irradiance_df = dill.load(load_data('nyc-natural-light', 'Autumn_Irradiance_df.dill'))
+    irradiance_df = dill.load(load_data('nyc-natural-light', 'Year_Irradiance_df.dill')) # year_
+    # winter_irradiance_df = dill.load(load_data('nyc-natural-light', 'Winter_Irradiance_df.dill'))
+    # spring_irradiance_df = dill.load(load_data('nyc-natural-light', 'Spring_Irradiance_df.dill'))
+    # summer_irradiance_df = dill.load(load_data('nyc-natural-light', 'Summer_Irradiance_df.dill'))
+    # autumn_irradiance_df = dill.load(load_data('nyc-natural-light', 'Autumn_Irradiance_df.dill'))
 
-    dfs = [year_irradiance_df, winter_irradiance_df, spring_irradiance_df, summer_irradiance_df, autumn_irradiance_df]
+    # dfs = [year_irradiance_df, winter_irradiance_df, spring_irradiance_df, summer_irradiance_df, autumn_irradiance_df]
 
-    irradiance_df = pd.concat(dfs)
+    # irradiance_df = pd.concat(dfs)
 
     building = irradiance_df[irradiance_df['BIN'] == BIN]
 
     left_column, right_column = st.columns(2)
 
     with left_column:
-        season = st.selectbox('Choose a season:', ('Year', 'Winter', 'Spring', 'Summer', 'Autumn'))
+        season = st.selectbox('Choose a season:', ('Year')) #, 'Winter', 'Spring', 'Summer', 'Autumn'))
 
     floors = building['Floor'].unique()
     with right_column:
