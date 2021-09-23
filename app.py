@@ -63,15 +63,15 @@ def app():
         st.header("""**Oops! We can't seem to locate your address in our database. Please try another.**""")
     
     ## load all irradiance files
-    irradiance_df = dill.load(load_data('nyc-natural-light', 'Year_Irradiance_df.dill')) # year_
-    # winter_irradiance_df = dill.load(load_data('nyc-natural-light', 'Winter_Irradiance_df.dill'))
-    # spring_irradiance_df = dill.load(load_data('nyc-natural-light', 'Spring_Irradiance_df.dill'))
-    # summer_irradiance_df = dill.load(load_data('nyc-natural-light', 'Summer_Irradiance_df.dill'))
-    # autumn_irradiance_df = dill.load(load_data('nyc-natural-light', 'Autumn_Irradiance_df.dill'))
+    year_irradiance_df = dill.load(load_data('nyc-natural-light', 'Year_Irradiance_df.dill')) # year_
+    winter_irradiance_df = dill.load(load_data('nyc-natural-light', 'Winter_Irradiance_df.dill'))
+    spring_irradiance_df = dill.load(load_data('nyc-natural-light', 'Spring_Irradiance_df.dill'))
+    summer_irradiance_df = dill.load(load_data('nyc-natural-light', 'Summer_Irradiance_df.dill'))
+    autumn_irradiance_df = dill.load(load_data('nyc-natural-light', 'Autumn_Irradiance_df.dill'))
 
-    # dfs = [year_irradiance_df, winter_irradiance_df, spring_irradiance_df, summer_irradiance_df, autumn_irradiance_df]
+    dfs = [year_irradiance_df, winter_irradiance_df, spring_irradiance_df, summer_irradiance_df, autumn_irradiance_df]
 
-    # irradiance_df = pd.concat(dfs)
+    irradiance_df = pd.concat(dfs)
 
     building = irradiance_df[irradiance_df['BIN'] == BIN]
 
@@ -153,7 +153,7 @@ def app():
     fig.tight_layout()
     st.pyplot(fig)
     
-    st.caption('Colors are strictly for visualizing abundance of low (cool colors) to strong light intensity (warm colors) on each wall. Irradiance values range from 0-3.5 kWh/$\mathregular{m^2}$/Day for yearly estimates and from 0-9 kWh/$\mathregular{m^2}$/Day for seasonal estimates.')
+    st.caption('Colors are strictly for visualizing abundance of low (cool colors) to strong light intensity (warm colors) on each wall. Irradiance values range from 0-3.5 kWh/${m^2}$/Day for yearly estimates and from 0-9 kWh/${m^2}$/Day for seasonal estimates.')
     
     map_ = folium.Map(location=latlng, zoom_start=25)
     folium.Marker(latlng, popup=folium.Popup(location, parse_html=True)).add_to(map_)
