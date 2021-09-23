@@ -85,8 +85,9 @@ def app():
     with right_column:
         floor = st.selectbox('Choose a floor:', tuple(['All'] + list(floors)))
 
-    building_final = building[building['Season'] == season]
-
+    # building_final = building[building['Season'] == season]
+    building_final = building
+    
     if floor != 'All':
         building_final = building_final[building_final['Floor'] == floor]
 
