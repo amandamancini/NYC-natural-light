@@ -4,34 +4,6 @@ import requests
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def string_to_arrayN(row):
-    if isinstance(row['N'], str):
-        irrad = row['N'].replace('[', '').replace(']', '').split()
-        return np.array([float(x) for x in irrad])
-    else:
-        return row['N']
-
-def string_to_arrayS(row):
-    if isinstance(row['S'], str):
-        irrad = row['S'].replace('[', '').replace(']', '').split()
-        return np.array([float(x) for x in irrad])
-    else:
-        return row['S']
-
-def string_to_arrayW(row):
-    if isinstance(row['W'], str):
-        irrad = row['W'].replace('[', '').replace(']', '').split()
-        return np.array([float(x) for x in irrad])
-    else:
-        return row['W']
-
-def string_to_arrayE(row):
-    if isinstance(row['E'], str):
-        irrad = row['E'].replace('[', '').replace(']', '').split()
-        return np.array([float(x) for x in irrad])
-    else:
-        return row['E']
-
 def relative_light(data, season):
     """ Returns one word descriptor of irradiance intensity and variation.
     Intensity values different for year vs season bc of number of days averaged."""
