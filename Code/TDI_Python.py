@@ -8,73 +8,14 @@ from os import remove
 from os.path import exists, basename, splitext
 import pandas as pd
 
-def shapefile_extract(in_file, out_file, filter_field, filter_values):
-    '''
-    Opens the input file, copies it into the oputput file, checking 
-    the filter.
-    '''
-    
-    in_ds = ogr.Open(in_file)
-    if in_ds is None:
-        print("Open failed.\n")
-        sys.exit(1)
-    in_lyr = in_ds.GetLayerByName(splitext(basename(in_file))[0])
-    if in_lyr is None:
-        print("Error opening layer")
-        sys.exit(1)
-
-
-    ##Creating the output file, with its projection
-    if exists(out_file):
-        remove(out_file)
-    driver_name = "ESRI Shapefile"
-    drv = ogr.GetDriverByName(driver_name)
-    if drv is None:
-        print("%s driver not available.\n" % driver_name)
-        sys.exit(1)
-    out_ds = drv.CreateDataSource(out_file)
-    if out_ds is None:
-        print("Creation of output file failed.\n")
-        sys.exit(1)
-    proj = in_lyr.GetSpatialRef()
-    
-    ##Creating the layer with its fields
-    out_lyr = out_ds.CreateLayer(splitext(basename(out_file))[0], proj, ogr.wkbMultiPolygon)
-    lyr_def = in_lyr.GetLayerDefn()
-    for i in range(lyr_def.GetFieldCount()):
-        out_lyr.CreateField (lyr_def.GetFieldDefn(i))
-    
-    
-    ##Writing all the features
-    in_lyr.ResetReading()
-
-    for feat in in_lyr:
-        value = feat.GetFieldAsString(feat.GetFieldIndex(filter_field))
-        if filter_func(value, filter_values):
-            out_lyr.CreateFeature(feat)
-       
-
-    in_ds = None
-    out_ds = None
-    
-def filter_func(value, filter_values):
-    '''
-    The custom filter function. In this case, we check that the value is in the
-    value list, stripping the white spaces. In the case of numeric values, a
-    comparaison could be done
-    '''
-    if value.strip() in filter_values:
-        return True
-    else:
-        return False
-
 def mask_by_shapefile(raster, shapefile, crop_file):
+    """ Mask a raster by a shapefile."""
     OutTile = gdal.Warp(crop_file, raster, cutlineDSName=shapefile, cropToCutline=True)
     OutTile = None
 
 def reclassify_aspect(raster_file, out_file):
-    """ Take in raster filename and an output filename
-    get out a raster with NA values changed to 0"""
+    """ Take in raster filename and an output filename and
+    get out a raster with describing NSWE directions and NA values changed to 0"""
     
     
     raster = gdal.Open(raster_file)
@@ -102,52 +43,6 @@ def reclassify_aspect(raster_file, out_file):
     out_raster.SetProjection(proj)
     out_raster.FlushCache()
 
-
-def avg_irrad(s):
-    li_str = s.split()
-    li_nums = list(map(float, li_str))
-    
-    li_reduce = [x for x in li_nums if x != 0]
-    
-    if li_reduce[2:] and len(li_reduce[2:]) < 400:
-        avg = mean(li_reduce[2:])
-    else:
-        avg = 0
-    
-    return (int(li_reduce[0]), int(li_reduce[1]), avg)
-
-def read_walls(file):
-    f = open(file, 'r')
-    f.readline()
-    file = f.read()
-    f.close()
-
-    file_list = file.split('\n')
-
-    reduce_file_list = []
-    for i in file_list[:-1]:
-        reduce_file_list.append(avg_irrad(i))
-        
-    return reduce_file_list
-
-def wall_irradiance(file):
-    '''Takes in a list of tuples (row, columns, values)
-    and outputs an array of averaged irradiance values
-    for a given wall pixel'''
-    
-    li = read_walls(file)
-    
-    rows, cols, vals = zip(*li)
-    
-    arr = sp.coo_matrix((vals, (rows, cols))).todense()
-    arr_corrected = arr[1:, 1:]
-    
-    x, y = arr_corrected.shape
-    arr_corrected2 = np.insert(arr_corrected, x, 0, axis = 0)
-    arr_corrected3 = np.insert(arr_corrected2, y, 0, axis = 1)
-    
-    return arr_corrected3
-
 def array_to_raster(arr, out_file, dsm_file):
     """ Take in arr, output filename, and associated DSM file name;
     get out a raster with averaged wall irradiance values"""
@@ -170,6 +65,7 @@ def array_to_raster(arr, out_file, dsm_file):
 
 
 def get_building_code(building_file):
+    """ Extract building BIN number from building footprint shapefile."""
     file = ogr.Open(building_file)
     shape = file.GetLayer(0)
 
@@ -239,6 +135,8 @@ def building_irradiance(irradiance_file, aspect_file):
 
 
 def read_walls_full(file):
+    """ Read in generated irradiance txt file and output a list of tuples decribing
+    (row, columns, values) for each sparse array in z plane."""
     f = open(file, 'r')
     f.readline()
     file = f.read()
@@ -259,7 +157,7 @@ def Extract(lst, pos):
 
 def full_wall_irradiance(file):
     '''Takes in a list of tuples (row, columns, values)
-    and outputs an list of arrays of  irradiance values
+    and outputs an list of full arrays of irradiance values
     for a given wall layer (z plane)'''
     
     li = read_walls_full(file)
@@ -351,12 +249,3 @@ def flatten_to_df(old_dict, season = None):
     df = pd.DataFrame.from_dict(full_data)
 
     return df
-
-def convert_address(row):
-    number = row['H_NO']
-    street = ' '.join(row['FULL_STREE'].split())
-    zipcode = int(row['ZIPCODE'])
-
-    address = f'{number} {street}, {zipcode}'
-    
-    return address
