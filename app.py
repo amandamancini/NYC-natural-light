@@ -35,7 +35,7 @@ def app():
     # create connection to s3
     s3_file = S3FileSystem(anon=True)
     
-    @st.cache()
+    # @st.cache() # caching doesnt seem to work
     def load_data(bucket, filename):
         data = s3_file.open('{}/{}'.format(bucket, filename))
         return data
