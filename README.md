@@ -38,7 +38,7 @@ The workflow to generate irradiance data is as follows:
     - Implementation is found in TDI_Full_Irradiance.py.
 4) Dictionaries of irradiance values were converted to pandas dataframes for use in Streamlit application.
     - Dill files were flattened in dataframes decribing NSWE well irradiance values by building, floor, and season. Data were aggregated into one master dataframe (all seasons), as well as exported with eash season individually.
-    - Irradiance values were normalized by number of days in each season (or year) into kWh/$\mathregular{m^2}$/Day.
+    - Irradiance values were normalized by number of days in each season (or year) into kWh/${m^2}$/Day.
     - Support functions are found in TDI_Python.py.
     - Implementation is found in TDI_Dataframes.py.
 
