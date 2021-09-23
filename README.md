@@ -20,7 +20,6 @@ Additionally, meterological data were downloaded from the NREL's National Solar 
 -general algorithm outlie
 
 ## Methods
-The workflow to generate irradiance data is as follows: 
 ### In QGIS application
 1) I created one DEM for Manhattan by moasicking together DEMs using the GDAL Merge tool in the QGIS application using the following parameters:
     - Output Data Type: Float32
@@ -29,11 +28,11 @@ The workflow to generate irradiance data is as follows:
 2) Meterological data were converted to the UMEP format using the Meteorological Data: MetPreprocessor function in the UMEP QGIS plugin. 
 
 ### In Python using TDI_Full_Irradiance.py and TDI_Dataframes.py
-3) Using 'neighborhood_setup' (see TDI_Neighborhood.py) I generated DSMs, wall aspect and height TIFFs, and buffered neighborhood and buidling shapefiles for each neighborhood
+3) Using `neighborhood_setup` (see TDI_Neighborhood.py) I generated DSMs, wall aspect and height TIFFs, and buffered neighborhood and buidling shapefiles for each neighborhood
     - This function was used to generate required data for modelling irradiance values on building walls in #3.
     - Support functions are found in TDI_Python.py and TDI_QGIS.py.
     - Implementation is found in TDI_Full_Irradiance.py.
-4) Using 'full_season_irradiances' (see TDI_Neighborhood.py) I generated irradiance values for NSWE walls of each building and for every floor.
+4) Using `full_season_irradiances` (see TDI_Neighborhood.py) I generated irradiance values for NSWE walls of each building and for every floor.
     - This function uses the Solar Radiation: Solar Energy on Building Envelopes (SEBE) in the UMEP QGIS plugin to calculated expected irradiance on each building wall pixel. These data were then converted to a list of arrays and for each building irradiance per floor and per wall direction (NSWE) was summarized and stored in a dictionary and exported as a dill file for later use.
     - These calculatations were perfomed for each neighborhood individually and for all seasons (yearly, winter, spring, summer, and autumn).
     - Support functions are found in TDI_Python.py and TDI_QGIS.py.
