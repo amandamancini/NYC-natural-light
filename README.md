@@ -17,7 +17,7 @@ Additionally, meterological data were downloaded from the NREL's National Solar 
 ## Background
 The motivation for this project was to create an application for New York City tenants and building owners to better understand the amount of natural light they can expect at different times of the year in their building for NSWE-facing walls. Due to the shading effects of buildings in NYC, adjacent buildings can received vastly different amounts of light throughout the year. The ability to estimate solar irradiance on building walls and rooftops in urban areas has previously been used to assess heat load in cities, as well as solar panel potential. This project aimed to utilize the methods developed for these other applications in a novel way that has real values for millions of people.
 
-The methods used in this project were adapted from those developed by the [Urban Multi-scale Environmental Predictor](https://umep-docs.readthedocs.io/en/latest/index.html) (UMEP) Community. To estimate solar irradiance on building walls, first walls were detected from a Digital Surface Model (DSM) using an edge detection filter and rasters of wall heights and aspect were generated. The DSM, wall heights and aspect rasters, and meterological data (primarily GHI, DNI, and DHI) were then used to generate the shadow volume expected to be cast by each building onto adjacent areas using methods described by Ratti and Richens (1999; 2004). Using a modified shadow-casting algorithm, total solar irradiance was calculated for each wall pixel by summing the amount of direct, diffuse, and reflected radiation on the wall pixel and then subtracting out shadow volume cast from adjacent buildings. 
+The methods used in this project were adapted from those developed by the [Urban Multi-scale Environmental Predictor](https://umep-docs.readthedocs.io/en/latest/index.html) (UMEP) Community. To estimate solar irradiance on building walls, first walls were detected from a Digital Surface Model (DSM) using an edge detection filter and rasters of wall heights and aspect were generated. The DSM, wall height and aspect rasters, and meterological data (primarily GHI, DNI, and DHI) were then used to generate the shadow volume expected to be cast by each building onto adjacent areas using methods described by Ratti and Richens (1999; 2004). Using a modified shadow-casting algorithm, total solar irradiance was then calculated for each wall pixel by summing the amount of direct, diffuse, and reflected radiation on the wall pixel and then subtracting out shadow volume cast from adjacent buildings. These measurements of total solar irradiance on walls were then used to visualize and qualify amount of natural sunlight on NSWE-facing walls for each building in Manhattan.
 
 For a more thorough description of algorithm details, see the following papers:
 - [Ratti CF & Richens P. 1999. Urban texture analysis with image processing techniques. In: Proc CAADFutures99, Atlanta, GA.](http://senseable.mit.edu/papers/pdf/19990608_Ratti_Richens_UrbanTexture_CAAD.pdf)
@@ -35,16 +35,16 @@ For a more thorough description of algorithm details, see the following papers:
 
 ### In Python using TDI_Full_Irradiance.py and TDI_Dataframes.py
 3) Using `neighborhood_setup` (see TDI_Neighborhood.py) I generated DSMs, wall aspect and height TIFFs, and buffered neighborhood and buidling shapefiles for each neighborhood
-    - This function was used to generate required data for modelling irradiance values on building walls in #3.
+    - This function was used to generate required data for modelling irradiance values on building walls in #4.
     - Support functions are found in TDI_Python.py and TDI_QGIS.py.
     - Implementation is found in TDI_Full_Irradiance.py.
 4) Using `full_season_irradiances` (see TDI_Neighborhood.py) I generated irradiance values for NSWE walls of each building and for every floor.
-    - This function uses the Solar Radiation: Solar Energy on Building Envelopes (SEBE) in the UMEP QGIS plugin to calculated expected irradiance on each building wall pixel. These data were then converted to a list of arrays and for each building irradiance per floor and per wall direction (NSWE) was summarized and stored in a dictionary and exported as a dill file for later use.
+    - This function uses the [Solar Radiation: Solar Energy on Building Envelopes (SEBE)](https://umep-docs.readthedocs.io/projects/tutorial/en/latest/Tutorials/SEBE.html) in the UMEP QGIS plugin to calculated expected irradiance on each building wall pixel. These data were then converted to a list of arrays and for each building irradiance per floor and per wall direction (NSWE) was summarized and stored in a dictionary and exported as a dill file for later use.
     - These calculatations were perfomed for each neighborhood individually and for all seasons (yearly, winter, spring, summer, and autumn).
     - Support functions are found in TDI_Python.py and TDI_QGIS.py.
     - Implementation is found in TDI_Full_Irradiance.py.
 5) Dictionaries of irradiance values were converted to pandas dataframes for use in Streamlit application.
-    - Dill files were flattened in dataframes decribing NSWE well irradiance values by building, floor, and season. Data were aggregated into one master dataframe (all seasons), as well as exported with eash season individually.
+    - Dill files were flattened in dataframes decribing NSWE well irradiance values by building, floor, and season. Data were aggregated into one master dataframe (all seasons), as well as exported with ecsh season individually.
     - Irradiance values were normalized by number of days in each season (or year) into kWh/m<sup>2</sup>/Day.
     - Support functions are found in TDI_Python.py.
     - Implementation is found in TDI_Dataframes.py.
@@ -53,8 +53,8 @@ For a more thorough description of algorithm details, see the following papers:
 6) Irradiance values were turned into qualitative descriptions (low, moderate, and strong) of light intensity by visualing a histogram of irradiance values for each season and dividing into the 3 categories along visual breaks in the data.
     - For yearly data, low light is considered irradiance below 1 kWh/m<sup>2</sup>/Day, moderate is between 1-2 kWh/m<sup>2</sup>/Day, and strong is above 2 kWh/m<sup>2</sup>/Day.
     For seasonal data, low light is considered irradiance below 2.5 kWh/m<sup>2</sup>/Day, moderate is between 2.5-5 kWh/m<sup>2</sup>/Day, and strong is above 5 kWh/m<sup>2</sup>/Day.
-    - Values different between yearly and seasonal estimated because of the number of days used to normalize data.
-    - A similar procedure was taken for generating qualitative descriptions of light variation.
+    - Values differ between yearly and seasonal estimates because of the number of days used to normalize data.
+    - A similar procedure was taken for generating qualitative descriptions of light variation using the standard deviation of irradiance.
     - Support functions are found in TDI_Streamlit.py
 
 ## Notes
