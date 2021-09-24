@@ -3,7 +3,7 @@
 This project and [application](https://nyc-natural-light.herokuapp.com/) were created to help tenants (and property owners) in New York City to better understand the amount of natural light they can expect to receive in their building and on different floors, across the year and in different seasons. 
 
 ## Data sources
-The data for this project were downloaded from two sources, [NYCOpenData](https://opendata.cityofnewyork.us/) and the [National Renewable Energy Laboratory](https://nsrdb.nrel.gov/). Most of the data for this project exceed the storage capacity on GitHub and can be downloaded at the links below. For more details on data manipulation and uses, see the Methods section below.
+The data for this project were downloaded from two sources, [NYCOpenData](https://opendata.cityofnewyork.us/) and the [National Renewable Energy Laboratory](https://nsrdb.nrel.gov/). Most of the data for this project exceed the storage capacity on GitHub and can be downloaded at the links below. Additionally, dataframes of final irradiance calcualtions can be found at the following public AWS S3 bucket: arn:aws:s3:::nyc-natural-light. For more details on data manipulation and uses, see the Methods section below.
 
 The geospatial data obtained from NYCOpenData were in the form of shapefiles, CSV files, and TIFFs and are as follows:
 - [Borough boundaries](https://data.cityofnewyork.us/City-Government/Borough-Boundaries/tqmj-j8zm) delineating the five boroughs of New York City, used for a borough-specific analysis.
