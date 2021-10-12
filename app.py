@@ -79,7 +79,7 @@ def app():
     left_column, right_column = st.columns(2)
 
     with left_column:
-        season = st.selectbox('Choose a season:', ('Winter', 'Spring', 'Summer', 'Autumn')) # 'Year', ''))
+        season = st.selectbox('Choose a season:', ('Year', '')) # 'Winter', 'Spring', 'Summer', 'Autumn'))
 
     floors = building['Floor'].unique()
     with right_column:
