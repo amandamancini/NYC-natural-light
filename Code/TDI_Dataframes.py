@@ -1,4 +1,5 @@
 import sys
+import numpy
 import pandas as pd
 import dill
 import numpy as np
